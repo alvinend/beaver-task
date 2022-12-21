@@ -4,10 +4,10 @@ services:
     mysql:
         platform: linux/x86_64 # M1チップ対応のため追記
         image: mysql:5.7
-        container_name: mysql
+        container_name: javaoop-mysql
         environment:
             MYSQL_ROOT_PASSWORD: password
-            MYSQL_DATABASE: recruit_db
+            MYSQL_DATABASE: task_db
             MYSQL_USER: user
             MYSQL_PASSWORD: password
         volumes:
