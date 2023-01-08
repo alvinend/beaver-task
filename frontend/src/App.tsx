@@ -1,24 +1,29 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import "./App.css";
+
+import "primereact/resources/themes/lara-light-indigo/theme.css"; //theme
+import "primereact/resources/primereact.min.css"; //core css
+import "primeicons/primeicons.css"; //icons
+import "primeflex/primeflex.css";
+import { Sidebar } from "./components/Sidebar";
+import { Topbar } from "./components/Topbar";
+import { Content } from "./components/Content";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={{ display: "flex", width: "100vw", height: "100vh" }}>
+      <Sidebar />
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          width: "90%",
+          height: "100%",
+        }}
+      >
+        <Topbar />
+        <Content />
+      </div>
     </div>
   );
 }
