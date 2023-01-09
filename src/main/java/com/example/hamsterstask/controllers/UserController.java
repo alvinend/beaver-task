@@ -7,26 +7,50 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import java.util.*;
 
 @Controller
-@RequestMapping(path="/demo")
+@RequestMapping(path = "/api/user")
 public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    @PostMapping(path="/add")
-    public @ResponseBody String addNewUser (@RequestParam String name, @RequestParam String email) {
-
+    @PostMapping
+    public @ResponseBody Object create(@RequestParam String name, @RequestParam String email) {
         User n = new User();
         n.setName(name);
         n.setEmail(email);
         userRepository.save(n);
-        return "Saved";
+
+        // Build Response
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("message", "success");
+        map.put("data", n);
+        return map;
     }
 
-    @GetMapping(path="/all")
-    public @ResponseBody Iterable<User> getAllUsers() {
-        // This returns a JSON or XML with the users
-        return userRepository.findAll();
+    @GetMapping
+    public @ResponseBody Object get(@RequestParam String name) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        User user = userRepository.findByName(name);
+
+        map.put("message", "success");
+        map.put("data", user);
+
+        return map;
+    }
+
+    @RequestMapping(method = RequestMethod.DELETE)
+    public @ResponseBody Object delete(@RequestParam String name) {
+        User user = userRepository.findByName(name);
+        userRepository.delete(user);
+
+        // Build Response
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("message", "success");
+
+        return map;
     }
 }

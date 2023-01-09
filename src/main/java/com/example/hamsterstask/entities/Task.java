@@ -14,12 +14,13 @@ import java.util.List;
 @Entity
 public class Task {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     private Timestamp dueDate;
     private String title;
     private String description;
+    private String status;
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
@@ -31,7 +32,6 @@ public class Task {
 
     @OneToMany(mappedBy = "task")
     private List<Comment> comments = new ArrayList<>();
-
 
     public Integer getId() {
         return id;
@@ -45,12 +45,32 @@ public class Task {
         return dueDate;
     }
 
+    public void setDueDate(Timestamp dueDate) {
+        this.dueDate = dueDate;
+    }
+
     public String getTitle() {
         return title;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public Timestamp getCreatedAt() {
@@ -85,4 +105,3 @@ public class Task {
         this.comments = comments;
     }
 }
-
