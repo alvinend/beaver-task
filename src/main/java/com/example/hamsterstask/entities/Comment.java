@@ -7,12 +7,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
 import java.sql.Timestamp;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Comment {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     private String content;
     private Timestamp createdAt;
@@ -21,6 +21,7 @@ public class Comment {
     @ManyToOne
     private User createdBy;
 
+    @JsonIgnore
     @ManyToOne
     private Task task;
 

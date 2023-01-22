@@ -1,6 +1,24 @@
 import React from "react";
+import { User } from "../services/types";
+import { userService } from "../services/userService";
 
 export const Topbar = () => {
+  const [taskCount, setTaskCount] = React.useState(0);
+  const [user, setUser] = React.useState<User | null>(null);
+
+  React.useEffect(() => {
+    (async () => {
+      const [user, error] = await userService.getUser(
+        parseInt(localStorage.getItem("userID")!)
+      );
+      if (error) {
+        return;
+      }
+
+      setUser(user);
+    })();
+  }, []);
+
   return (
     <div
       style={{
@@ -19,24 +37,7 @@ export const Topbar = () => {
           flexDirection: "column",
           height: "100%",
         }}
-      >
-        <div
-          style={{
-            fontWeight: "bold",
-            fontSize: "1.5rem",
-            marginBottom: "0.5rem",
-          }}
-        >
-          My Tasks
-        </div>
-        <div
-          style={{
-            fontSize: "1rem",
-          }}
-        >
-          3 Tasks
-        </div>
-      </div>
+      ></div>
       <div
         style={{
           display: "flex",
@@ -44,13 +45,17 @@ export const Topbar = () => {
           alignItems: "center",
         }}
       >
-        Alvin Endratno
+        {user?.name}
         <i
           className="pi pi-sign-out"
           style={{
             marginLeft: "1rem",
             fontSize: "1.5rem",
             cursor: "pointer",
+          }}
+          onClick={() => {
+            localStorage.removeItem("userID");
+            window.location.reload();
           }}
         />
       </div>

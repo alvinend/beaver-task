@@ -6,10 +6,10 @@ export const SignupPage = ({
   onSignup,
   onLogin,
 }: {
-  onSignup: (username: string, password: string, email: string) => void;
+  onSignup: (name: string, password: string, email: string) => void;
   onLogin: () => void;
 }) => {
-  const [username, setUsername] = React.useState("");
+  const [name, setName] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [email, setEmail] = React.useState("");
 
@@ -50,12 +50,12 @@ export const SignupPage = ({
           Get Started!
         </div>
         <InputText
-          placeholder="Username"
+          placeholder="Name"
           style={{
             width: "100%",
           }}
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
         />
         <InputText
           placeholder="Password"
@@ -79,7 +79,7 @@ export const SignupPage = ({
           style={{
             width: "100%",
           }}
-          onClick={() => onSignup(username, password, email)}
+          onClick={() => onSignup(name, password, email)}
         />
 
         <div

@@ -5,9 +5,48 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Checkbox } from "primereact/checkbox";
 import { TaskOverlay } from "./TaskOverlay";
+import { Task } from "../services/types";
+import { taskService } from "../services/taskService";
+import moment from "moment";
+import { Button } from "primereact/button";
 
 export const Content = () => {
   const [visible, setVisible] = React.useState(false);
+  const [tasks, setTasks] = React.useState<Task[]>([]);
+  const [selectedTaskId, setSelectedTaskId] = React.useState("");
+
+  const refreshTasks = async () => {
+    const [tasks, error] = await taskService.getAllTasks({
+      userId: localStorage.getItem("userID")!,
+    });
+
+    if (error) {
+      console.error(error);
+    }
+    console.log(tasks);
+
+    setTasks(tasks);
+  };
+
+  React.useEffect(() => {
+    refreshTasks();
+  }, []);
+
+  const handleCompleteStatus = async (taskId: number) => {
+    const task = tasks.find((task) => task.id === taskId)!;
+
+    const status = task.status === "Done" ? "Pending" : "Done";
+
+    const [_, error] = await taskService.updateTask({
+      task: { ...task, status },
+    });
+
+    if (error) {
+      console.error(error);
+    }
+
+    refreshTasks();
+  };
 
   return (
     <div
@@ -21,107 +60,100 @@ export const Content = () => {
       }}
     >
       <Card>
-        <TabView>
-          <TabPanel
-            header="List"
-            headerTemplate={(options) => (
+        <p className="content-table">
+          <DataTable
+            rowClassName={(rowData) =>
+              rowData.status === "Done" ? "done" : ""
+            }
+            onRowClick={(e) => {
+              setSelectedTaskId(e.data.id);
+              setVisible(true);
+            }}
+            value={tasks.map((task) => ({
+              id: task.id,
+              title: task.title,
+              description: task.description,
+              status: task.status,
+              dueDate: task.dueDate
+                ? moment(task.dueDate).format("YYYY/MM/DD")
+                : "",
+            }))}
+            footer={
               <div
-                className="flex align-items-center justify-content-center px-3"
                 style={{
-                  cursor: "pointer",
+                  display: "flex",
                   width: "100%",
-                  height: "50px",
-                  fontSize: "1rem",
-                  fontWeight: "bold",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
                 }}
-                onClick={options.onClick}
+                onClick={() => {
+                  setSelectedTaskId("");
+                  setVisible(true);
+                }}
               >
-                <i className="pi pi-list" style={{ marginRight: "0.5rem" }} />{" "}
-                List
+                <i className="pi pi-plus" style={{ fontSize: "1.5rem" }} />
               </div>
-            )}
+            }
           >
-            <p>
-              <DataTable
-                onRowClick={(e) => setVisible(true)}
-                value={[
-                  {
-                    id: 1,
-                    name: "Alvin Endratno",
-                    task: "Create a new project",
-                    status: "Done",
-                  },
-                  {
-                    id: 2,
-                    name: "Alvin Endratno",
-                    task: "Create a new project",
-                    status: "Done",
-                  },
-                  {
-                    id: 3,
-                    name: "Alvin Endratno",
-                    task: "Create a new project",
-                    status: "Done",
-                  },
-                ]}
-              >
-                {/* Checkbox Here */}
-                <Column
-                  headerStyle={{ width: "3rem", textAlign: "center" }}
-                  bodyStyle={{ textAlign: "center", overflow: "visible" }}
-                  body={(rowData) => {
-                    return (
-                      <Checkbox
-                        inputId="binary"
-                        onChange={(e) => console.log(e.value)}
-                        checked={rowData.status === "Done" ? true : false}
-                      />
-                    );
-                  }}
-                />
+            {/* Checkbox Here */}
+            <Column
+              field="status"
+              headerStyle={{ width: "3rem", textAlign: "center" }}
+              bodyStyle={{ textAlign: "center", overflow: "visible" }}
+              sortable
+              body={(rowData) => {
+                return (
+                  <Checkbox
+                    inputId="binary"
+                    onChange={(e) => handleCompleteStatus(rowData.id)}
+                    checked={rowData.status === "Done" ? true : false}
+                  />
+                );
+              }}
+            />
 
-                <Column field="id" header="ID" />
-                <Column field="name" header="Name" />
-                <Column field="task" header="Task" />
-              </DataTable>
-            </p>
-          </TabPanel>
-          <TabPanel
-            header="Board"
-            headerTemplate={(options) => (
-              <div
-                className="flex align-items-center justify-content-center px-3"
-                style={{
-                  cursor: "pointer",
-                  width: "100%",
-                  height: "100%",
-                  fontSize: "1rem",
-                  fontWeight: "bold",
-                }}
-                onClick={options.onClick}
-              >
-                <i
-                  className="pi pi-th-large"
-                  style={{ marginRight: "0.5rem" }}
-                />{" "}
-                Board
-              </div>
-            )}
-          >
-            <p>
-              Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-              accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
-              quae ab illo inventore veritatis et quasi architecto beatae vitae
-              dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit
-              aspernatur aut odit aut fugit, sed quia consequuntur magni dolores
-              eos qui ratione voluptatem sequi nesciunt. Consectetur, adipisci
-              velit, sed quia non numquam eius modi.
-            </p>
-          </TabPanel>
-        </TabView>
+            <Column field="id" header="ID" sortable />
+            <Column
+              field="title"
+              header="Title"
+              sortable
+              filter
+              filterPlaceholder="Search by title"
+            />
+            <Column
+              field="description"
+              header="Description"
+              style={{ maxWidth: "300px" }}
+            />
+            <Column field="dueDate" header="Due Date" sortable />
+            <Column
+              body={(rowData) => {
+                return (
+                  <Button
+                    label="Delete"
+                    className="p-button-danger"
+                    onClick={async () => {
+                      await taskService.deleteTask({ taskId: rowData.id });
+                      refreshTasks();
+                    }}
+                  />
+                );
+              }}
+            />
+          </DataTable>
+        </p>
       </Card>
 
-      <TaskOverlay visible={visible} onHide={() => setVisible(false)} />
+      <TaskOverlay
+        id={selectedTaskId}
+        visible={visible}
+        onHide={() => {
+          setVisible(false);
+          setSelectedTaskId("");
+          refreshTasks();
+        }}
+      />
     </div>
   );
 };

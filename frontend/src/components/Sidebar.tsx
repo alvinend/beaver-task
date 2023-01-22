@@ -32,25 +32,6 @@ export const Sidebar = () => {
           ></i>
           Beaver Task
         </h3>
-        <div
-          style={{
-            width: "100%",
-            cursor: "pointer",
-            marginBottom: "2rem",
-          }}
-        >
-          Profile
-        </div>
-
-        <div
-          style={{
-            width: "100%",
-            cursor: "pointer",
-            marginBottom: "2rem",
-          }}
-        >
-          My Task
-        </div>
 
         <div
           style={{

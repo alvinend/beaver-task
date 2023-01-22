@@ -6,10 +6,10 @@ export const LoginPage = ({
   onLogin,
   onSignup,
 }: {
-  onLogin: (username: string, password: string) => void;
+  onLogin: (email: string, password: string) => void;
   onSignup: () => void;
 }) => {
-  const [username, setUsername] = React.useState("");
+  const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
 
   return (
@@ -49,12 +49,12 @@ export const LoginPage = ({
           Welcome Back!
         </div>
         <InputText
-          placeholder="Username"
+          placeholder="Email"
           style={{
             width: "100%",
           }}
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
         <InputText
           placeholder="Password"
@@ -70,7 +70,7 @@ export const LoginPage = ({
           style={{
             width: "100%",
           }}
-          onClick={() => onLogin(username, password)}
+          onClick={() => onLogin(email, password)}
         />
         {/* Crate link to Signup */}
         <div
